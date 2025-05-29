@@ -1,0 +1,135 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+:root {
+  --primary-bg: white;
+  --accent-color: #c4b200;
+  --hover-color: blue;
+  --text-color: black;
+  --error-color: red;
+  --input-bg: #EFEEEA;
+  --input-border: #ccc;
+  --font-main: 'Roboto', sans-serif;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-main);
+  background: url('lay.png') no-repeat center center fixed;
+  background-size: cover;
+  color: var(--text-color);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.form-box {
+  width: 100%;
+  max-width: 500px;
+  background: var(--primary-bg);
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  box-sizing: border-box;
+}
+
+img {
+  display: block;
+  margin: 0 auto 20px;
+  max-width: 100%;
+  height: auto;
+}
+
+label {
+  display: block;
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 5px;
+}
+
+input {
+  width: 100%;
+  padding: 15px;
+  margin-bottom: 5px;
+  border: 1px solid var(--input-border);
+  border-radius: 6px;
+  background: var(--input-bg);
+  color: #333;
+  font-size: 16px;
+  transition: border 0.3s ease;
+  box-sizing: border-box;
+}
+
+input:focus {
+  outline: none;
+  border: 2px solid var(--accent-color);
+}
+
+button {
+  width: 100%;
+  background: var(--accent-color);
+  color: #000;
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+button:hover {
+  background: var(--hover-color);
+  color: white;
+}
+
+.error-message {
+  color: var(--error-color);
+  font-size: 14px;
+  margin-top: -15px;
+  margin-bottom: 15px;
+}
+
+.btext {
+  font-size: 16px;
+  text-align: center;
+  margin-top: 20px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .form-box {
+    padding: 30px;
+  }
+
+  label {
+    font-size: 16px;
+  }
+
+  input {
+    padding: 12px;
+    font-size: 15px;
+  }
+
+  button {
+    font-size: 15px;
+    padding: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .form-box {
+    padding: 20px;
+  }
+
+  input {
+    padding: 10px;
+  }
+
+  button {
+    padding: 10px;
+  }
+}

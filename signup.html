@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sign Up</title>
+  <link rel="stylesheet" href="signup.css">
+</head>
+<body>
+  
+  <form id="signup-form">
+    <div class="form-box">
+      <img src="Layout (7).png">
+      <p>
+        <label for="email">Email</label>
+        <input type="email" id="email" required autocomplete="off" />
+        <div id="email-error" class="error-message"></div>
+      </p>
+
+      <p>
+        <label for="password">Password</label>
+        <input type="password" id="password" required />
+        <div id="password-error" class="error-message"></div>
+      </p>
+
+      <p>
+        <label for="retype-password">Retype Password</label>
+        <input type="password" id="retype-password" required />
+        <div id="retype-password-error" class="error-message"></div>
+      </p>
+
+      <button type="submit">Sign Up</button>
+
+      <p class="btext">
+        Already have an account? 
+        <a href="login.html" class="a"><b>Log in</b></a>
+      </p>
+    </div>
+  </form>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDe-KnRGbfrcKhsaKsijZjkbpwmAIiA5C8",
+      authDomain: "makmak-4ad38.firebaseapp.com",
+      projectId: "makmak-4ad38",
+      storageBucket: "makmak-4ad38.appspot.com",
+      messagingSenderId: "963282075408",
+      appId: "1:963282075408:web:0cd8e1b1a09ed03e18af95"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const database = getDatabase(app);
+
+    function validateForm(email, password, retypePassword) {
+      let isValid = true;
+      document.getElementById("email-error").innerText = "";
+      document.getElementById("password-error").innerText = "";
+      document.getElementById("retype-password-error").innerText = "";
+
+      const schoolEmailRegex = /^[0-9]{10}@dhvsu\.edu\.ph$/;
+
+      if (!email) {
+        document.getElementById("email-error").innerText = "Email is required.";
+        isValid = false;
+      } else if (!schoolEmailRegex.test(email)) {
+        document.getElementById("email-error").innerText = "Please use your DHVSU school email.";
+        isValid = false;
+      }
+
+      if (!password) {
+        document.getElementById("password-error").innerText = "Password is required.";
+        isValid = false;
+      }
+
+      if (!retypePassword) {
+        document.getElementById("retype-password-error").innerText = "Please retype the password.";
+        isValid = false;
+      } else if (password !== retypePassword) {
+        document.getElementById("retype-password-error").innerText = "Passwords do not match.";
+        isValid = false;
+      }
+
+      return isValid;
+    }
+
+    document.getElementById("signup-form").addEventListener("submit", function(event) {
+      event.preventDefault();
+
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const retypePassword = document.getElementById("retype-password").value;
+
+      if (!validateForm(email, password, retypePassword)) {
+        return;
+      }
+
+      createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          const user = userCredential.user;
+          return set(ref(database, 'users/' + user.uid), { email: email });
+        })
+        .then(() => {
+          alert("🎉 Account Successfully Created!");
+          setTimeout(() => {
+            window.location.href = "login.html";
+          }, 1000);
+        })
+        .catch((error) => {
+          const errorMessage = error.message;
+          if (errorMessage.includes("email-already-in-use")) {
+            alert("❗ This email is already registered. Please use a different email.");
+          } else {
+            console.error("Firebase error:", error);
+            alert("❗ Error: " + errorMessage);
+          }
+        });
+    });
+  </script>
+</body>
+</html>

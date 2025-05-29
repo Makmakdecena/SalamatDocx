@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>COE & COG Appointment</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #f9f9f9;
+    }
+    header {
+      background: #003366;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+    nav {
+      background: #444;
+      display: flex;
+      justify-content: center;
+      padding: 10px;
+    }
+    nav a {
+      color: white;
+      margin: 0 15px;
+      text-decoration: none;
+    }
+    .container {
+      max-width: 900px;
+      margin: auto;
+      padding: 20px;
+      background: white;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .reminder {
+      border-left: 5px solid red;
+      padding-left: 15px;
+      margin-bottom: 20px;
+    }
+    .reminder strong {
+      color: red;
+    }
+    h2, h3 {
+      text-align: center;
+    }
+    .terms {
+      font-size: 0.95em;
+      margin-top: 20px;
+      text-align: justify;
+    }
+    .checkbox {
+      margin: 30px 0;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .checkbox input {
+      margin-top: 5px;
+    }
+    .buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    button {
+      background: #003366;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      cursor: pointer;
+      font-size: 1em;
+      border-radius: 4px;
+    }
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    @media (max-width: 600px) {
+      .checkbox {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Certificate of Enrollment & Grades Appointment</h1>
+    <p>University Online Request Portal</p>
+  </header>
+
+  <div class="container">
+    <div class="reminder">
+      <strong>Reminder:</strong>
+      Applicants are recommended to use Google or Yahoo email accounts to avoid technical incompatibilities.
+      <strong>Email address restrictions and accessibility may vary on your access location, country, and/or email servers.</strong>
+    </div>
+
+    <h2>TERMS AND CONDITIONS</h2>
+    <p class="terms">
+      This appointment and scheduling system allocates slots on a first come, first served basis.
+      Users are responsible for supplying, checking, and verifying the accuracy of all information provided. Incorrect or incomplete submissions may lead to forfeiture of the request.
+      <br><br>
+      <strong>All payments are non-refundable.</strong> Requests may be cancelled for failure to show up, false documentation, or inconsistencies in the submitted information.
+    </p>
+
+    <h3>DATA PRIVACY NOTICE</h3>
+    <p class="terms">
+      By proceeding with this application, you consent to the collection, processing, and use of your personal data solely for the purpose of handling your Certificate of Enrollment or Certificate of Grades request.
+      All information submitted will be treated as confidential and handled in accordance with the Philippine Data Privacy Act of 2012 and other applicable data protection policies of the University.
+      <br><br>
+      <strong style="color: red;">By checking the box below, you confirm that you have read, understood, and agreed to the Terms and Conditions, and that you give your consent to the use of your personal information as outlined in the Data Privacy Notice.</strong>
+    </p>
+
+    <div class="checkbox">
+      <input type="checkbox" id="consent" onchange="toggleButtons()">
+      <label for="consent">
+        I agree to the Terms and Conditions and authorize use of my personal data as described above.
+      </label>
+    </div>
+
+    <div class="buttons">
+      <button id="loginBtn" disabled onclick="goToPage('login')">Login</button>
+      <button id="signupBtn" disabled onclick="goToPage('signup')">Sign Up</button>
+    </div>
+  </div>
+
+  <script>
+    function toggleButtons() {
+      const checked = document.getElementById('consent').checked;
+      document.getElementById('loginBtn').disabled = !checked;
+      document.getElementById('signupBtn').disabled = !checked;
+    }
+
+    function goToPage(action) {
+      if (action === 'login') {
+        window.location.href = 'login.html';
+      } else if (action === 'signup') {
+        window.location.href = 'signup.html';
+      }
+    }
+  </script>
+</body>
+</html>

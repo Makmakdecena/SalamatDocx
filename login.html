@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login</title>
+  <link rel="stylesheet" href="login.css" />
+</head>
+<body>
+  <form id="login-form">
+    <div class="form-box">
+      <img src="Layout (7).png" alt="Logo">
+
+      <label for="email">Email</label>
+      <input type="email" id="email" required autocomplete="off" />
+
+      <label for="password">Password</label>
+      <input type="password" id="password" required />
+
+      <div class="form-actions">
+        <a href="#" id="forgot-password">Forgot Password?</a>
+      </div>
+
+      <button type="submit">Login</button>
+      <p id="error-message"></p>
+      <p class="btext">Don't have an account? <a href="SignUp.html">Sign Up</a></p>
+    </div>
+  </form>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, signOut } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+    import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDe-KnRGbfrcKhsaKsijZjkbpwmAIiA5C8",
+      authDomain: "makmak-4ad38.firebaseapp.com",
+      projectId: "makmak-4ad38",
+      storageBucket: "makmak-4ad38.appspot.com",
+      messagingSenderId: "963282075408",
+      appId: "1:963282075408:web:0cd8e1b1a09ed03e18af95"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const database = getDatabase(app);
+
+    const adminPassword = "admin123";
+
+    signOut(auth).then(() => {
+      console.log("Signed out on login page.");
+    });
+
+    document.getElementById("login-form").addEventListener("submit", async function (event) {
+      event.preventDefault();
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const errorMessageElement = document.getElementById("error-message");
+
+      errorMessageElement.innerText = "";
+
+      if (email === "admin@gmail.com" && password === adminPassword) {
+        window.location.href = "Cog_And_Coe_AdminDashboard.html";
+      } else {
+        signInWithEmailAndPassword(auth, email, password)
+          .then(() => {
+            const user = auth.currentUser;
+            return get(ref(database, 'users/' + user.uid));
+          })
+          .then(snapshot => {
+            const userData = snapshot.val();
+            const userRole = userData ? userData.role : null;
+
+            if (userRole === "admin") {
+              window.location.href = "Cog_And_Coe_AdminDashboard.html";
+            } else {
+              window.location.href = "StudentDashboard.html";
+            }
+          })
+          .catch(error => {
+            // Show user-friendly error messages
+            switch (error.code) {
+            case "auth/invalid-credential":
+            errorMessageElement.innerText = "Invalid login credentials. Please check your dhvsu email and password.";
+            break;
+    default:
+    errorMessageElement.innerText = "Login failed: " + error.message;
+    break;
+}
+          });
+      }
+    });
+
+    document.getElementById("forgot-password").addEventListener("click", function (event) {
+      event.preventDefault();
+      const email = document.getElementById("email").value;
+
+      if (email === "") {
+        alert("Please enter your email to reset your password.");
+        return;
+      }
+
+      sendPasswordResetEmail(auth, email)
+        .then(() => {
+          alert("Password reset email sent! Please check your inbox.");
+        })
+        .catch(error => {
+          alert("Error: " + error.message);
+        });
+    });
+  </script>
+</body>
+</html>

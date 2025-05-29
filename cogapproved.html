@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Approved Requests</title>
+  <link rel="stylesheet" href="coeapproved.css" />
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <aside class="sidebar">
+    <div class="logo">
+      <a href="Cog_And_Coe_AdminDashboard.html"><img src="Layout (7).png" alt="Logo" /></a>
+      <span>APPROVED</span>
+    </div>
+    <nav>
+    <ul>
+      <li><a href="Cog_Admin.html"><span>📥<br>Pending</span></a></li>
+      <li class="active"><a href="cogapproved.html"><span>✅<br>Approved</span></a></li>
+      <li><a href="cogreject.html"><span>❌<br>Reject</span></a></li>
+      <li><a href="cogcompletetrans.html"><span>📦<br>Complete</span></a></li></a>
+    </ul>
+  </nav>
+  </aside>
+
+  <div class="header-container">
+    <h1>Approved - Certificate of Grade</h1>
+  </div>
+
+  <div class="search-wrapper">
+    <input type="text" id="searchBar" placeholder="Search by Student Number..." />
+  </div>
+
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Student #</th>
+          <th>Reason</th>
+          <th>Status</th>
+          <th>GCash Ref #</th>
+        </tr>
+      </thead>
+      <tbody id="approvedTableBody"><tr><td colspan="6">Loading...</td></tr></tbody>
+    </table>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDe-KnRGbfrcKhsaKsijZjkbpwmAIiA5C8",
+      authDomain: "makmak-4ad38.firebaseapp.com",
+      projectId: "makmak-4ad38",
+      storageBucket: "makmak-4ad38.appspot.com",
+      messagingSenderId: "963282075408",
+      appId: "1:963282075408:web:0cd8e1b1a09ed03e18af95"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const requestsRef = ref(db, "requests");
+
+    const tableBody = document.getElementById("approvedTableBody");
+    const searchBar = document.getElementById("searchBar");
+
+    let approvedRequests = [];
+
+    function renderTable(filter = "") {
+      tableBody.innerHTML = "";
+
+      const filtered = approvedRequests.filter(req =>
+        req.data.studentNumber.toLowerCase().includes(filter.toLowerCase())
+      );
+
+      if (filtered.length === 0) {
+        const row = document.createElement("tr");
+        row.innerHTML = `<td colspan="6" style="text-align:center;">No approved requests found.</td>`;
+        tableBody.appendChild(row);
+        return;
+      }
+
+      filtered.forEach(({ data }) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${data.name || "N/A"}</td>
+          <td>${data.email || "N/A"}</td>
+          <td>${data.studentNumber || "N/A"}</td>
+          <td>${data.reason || "N/A"}</td>
+          <td>${data.status || "N/A"}</td>
+          <td>${data.proof || "N/A"}</td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+
+    onValue(requestsRef, (snapshot) => {
+      approvedRequests = [];
+      if (!snapshot.exists()) {
+        renderTable();
+        return;
+      }
+
+      snapshot.forEach(childSnapshot => {
+        const data = childSnapshot.val();
+        if (data.status === "Approved") {
+          approvedRequests.push({ key: childSnapshot.key, data });
+        }
+      });
+
+      renderTable();
+    });
+
+    searchBar.addEventListener("input", () => {
+      renderTable(searchBar.value.trim());
+    });
+  </script>
+</body>
+</html>

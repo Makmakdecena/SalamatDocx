@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard - Certificate of Enrollment</title>
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="COEcompletetrns.css">
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="logo">
+    <a href="Cog_And_Coe_AdminDashboard.html"><img src="Layout (7).png" alt="Logo" /></a>
+    <span>COMPLETE</span>
+  </div>
+    <nav>
+    <ul>
+      <li><a href="Cog_Admin.html"><span>📥<br>Pending</span></a></li>
+      <li><a href="cogapproved.html"><span>✅<br>Approved</span></a></li>
+      <li><a href="cogreject.html"><span>❌<br>Reject</span></a></li>
+      <li class="active"><a href="cogcompletetrans.html"><span>📦<br>Complete</span></a></li></a>
+    </ul>
+  </nav>
+</aside>
+
+<div class="header-container">
+  <h1>Certificate of Grade - COMPLETE TRANSACTION</h1>
+  <input type="text" id="searchBar" placeholder="Search by Student Number..." />
+</div>
+
+<div class="table-container">
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Student #</th>
+        <th>Email</th>
+        <th>Reason</th>
+        <th>School Year</th>
+        <th>Semester</th>
+        <th>GCash Ref #</th>
+        <th>Status</th>
+        <th>Pickup Date</th>
+        <th>Refund Date</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="requestsTableBody">
+      <tr><td colspan="11">Loading...</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+  import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDe-KnRGbfrcKhsaKsijZjkbpwmAIiA5C8",
+    authDomain: "makmak-4ad38.firebaseapp.com",
+    projectId: "makmak-4ad38",
+    storageBucket: "makmak-4ad38.appspot.com",
+    messagingSenderId: "963282075408",
+    appId: "1:963282075408:web:0cd8e1b1a09ed03e18af95"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  const requestsRef = ref(db, "requests");
+  const tableBody = document.getElementById("requestsTableBody");
+  const searchBar = document.getElementById("searchBar");
+
+  emailjs.init("BhyQjC79iHhFVSFKY");
+
+  let allRequests = [];
+
+  function renderTable(filter = "") {
+    tableBody.innerHTML = "";
+
+    const filtered = allRequests.filter(({ data }) => {
+      const studentNum = data.studentNumber ? data.studentNumber.toLowerCase() : "";
+      return studentNum.includes(filter.toLowerCase());
+    });
+
+    if (filtered.length === 0) {
+      tableBody.innerHTML = `<tr><td colspan="11" style="text-align:center;">No requests found.</td></tr>`;
+      return;
+    }
+
+    filtered.forEach(({ key, data }) => {
+      let statusDisplay = data.status || "N/A";
+      if (data.status === "Rejected" && data.refund === true) {
+        statusDisplay = "Rejected/Refund";
+      }
+
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${data.name || "N/A"}</td>
+        <td>${data.studentNumber || "N/A"}</td>
+        <td>${data.email || "N/A"}</td>
+        <td>${data.reason || "N/A"}</td>
+        <td>${data.schoolYear || "N/A"}</td>
+        <td>${data.semester || "N/A"}</td>
+        <td>${data.proof || "N/A"}</td>
+        <td>${statusDisplay}</td>
+        <td>${data.pickupDate || "N/A"}</td>
+        <td>${data.refundDate || "N/A"}</td>
+      `;
+
+      const actionTd = document.createElement("td");
+
+      if (data.status === "Approved") {
+        const completeBtn = document.createElement("button");
+        completeBtn.className = "complete";
+        completeBtn.textContent = "Mark Complete";
+        completeBtn.addEventListener("click", async () => {
+          const confirmed = await markComplete(key, data.email, data.name);
+          if (confirmed) completeBtn.remove();
+        });
+        actionTd.appendChild(completeBtn);
+
+      } else if (data.status === "Rejected") {
+        if (data.refund === true) {
+          actionTd.textContent = "Refunded";
+        } else {
+          const refundBtn = document.createElement("button");
+          refundBtn.className = "refund";
+          refundBtn.textContent = "Refund";
+          refundBtn.addEventListener("click", async () => {
+            const refundDate = prompt("Enter Refund Date (e.g., 2025-05-20):");
+            if (!refundDate) {
+              alert("Refund date is required.");
+              return;
+            }
+            const confirmed = confirm(`Mark refund done on ${refundDate} for ${data.name}?`);
+            if (!confirmed) return;
+            try {
+              await update(ref(db, `requests/${key}`), { refund: true, refundDate });
+              alert("Refund marked done.");
+              renderTable(searchBar.value.trim());
+            } catch (error) {
+              alert("Error updating refund status: " + error.message);
+            }
+          });
+          actionTd.appendChild(refundBtn);
+        }
+      } else {
+        actionTd.textContent = "-";
+      }
+
+      row.appendChild(actionTd);
+      tableBody.appendChild(row);
+    });
+  }
+
+  onValue(requestsRef, (snapshot) => {
+    allRequests = [];
+    if (!snapshot.exists()) {
+      tableBody.innerHTML = `<tr><td colspan="11" style="text-align:center;">No requests found.</td></tr>`;
+      return;
+    }
+
+    snapshot.forEach(childSnapshot => {
+      allRequests.push({ key: childSnapshot.key, data: childSnapshot.val() });
+    });
+
+    renderTable(searchBar.value.trim());
+  });
+
+  searchBar.addEventListener("input", () => {
+    renderTable(searchBar.value.trim());
+  });
+
+  async function markComplete(key, email, name) {
+    let date = prompt("Enter Pickup Date (e.g., 2025-05-18):");
+    if (!date) {
+      alert("Pickup date is required.");
+      return false;
+    }
+
+    const requestRef = ref(db, `requests/${key}`);
+
+    try {
+      await update(requestRef, {
+        status: "Completed",
+        pickupDate: date
+      });
+
+      alert(`Request marked as Completed with pickup date ${date}.`);
+      return true;
+    } catch (err) {
+      alert("Error updating request: " + err.message);
+      return false;
+    }
+  }
+</script>
+</body>
+</html>

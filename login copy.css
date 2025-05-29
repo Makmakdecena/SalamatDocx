@@ -1,0 +1,137 @@
+:root {
+    --primary-bg: white;
+    --accent-color: #c4b200;
+    --hover-color:blue;
+    --text-color: black;
+    --error-color: red;
+    --input-bg: #EFEEEA;
+    --input-border: #ccc;
+    
+}
+
+body {
+    margin: 0;
+    font-family: var(--font-main);
+    background: url('lay.png') no-repeat center center fixed;
+    background-size: cover;
+    color: var(--text-color);
+}
+
+.form-box {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 80%;
+    width: 500px;
+    background: var(--primary-bg);
+    padding: 70px;
+    border-radius: 12px;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(10px);
+    text-align: left;
+}
+
+img {
+    display: block;
+    margin: 0 auto 50px;
+    width: 300px;
+}
+
+label {
+    display: block;
+    margin-top: 15px;
+    font-size: 20px;
+    font-weight: bold;
+    color: var(--text-color);
+}
+
+input {
+    width: 100%;
+    padding: 15px;
+    margin-top:  5px;
+    border: 1px solid var(--input-border);
+    border-radius: 5px;
+    background: var(--input-bg);
+    color: #333;
+    font-size: 16px;
+    transition: border 0.3s ease;
+}
+
+input:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 5px var(--accent-color);
+}
+
+.form-actions {
+    text-align: left;
+    margin-top: 10px;
+}
+
+#forgot-password {
+    color: var(--text-color);
+    font-size: 20px;
+    text-decoration: none;
+    transition: color 0.3s ease;
+    color: blue;
+}
+
+#forgot-password:hover {
+    color: var(--hover-color);
+}
+
+button {
+    display: block;
+    margin: 30px auto 0;
+    width: 30%;
+    background: var(--accent-color);
+    color: #000;
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+    margin-right: -30px ;
+    
+}
+
+button:hover {
+    background: var(--hover-color);
+    transform: translateY(-2px);
+}
+
+.btext {
+    margin-bottom: -10px;
+    font-size: 16px;
+    font-weight: bold;
+
+}
+
+#error-message {
+    color: var(--error-color);
+    text-align: center;
+    margin-top: 12px;
+    font-size: 15px;
+}
+
+@media (max-width: 600px) {
+    .form-box {
+        padding: 25px;
+        width: 90%;
+    }
+
+    input, button {
+        font-size: 14px;
+    }
+
+    button {
+        width: 85%;
+    }
+
+    img {
+        width: 100px;
+    }
+}

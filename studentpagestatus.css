@@ -1,0 +1,253 @@
+:root {
+    --primary: #007bff;
+    --success: #28a745;
+    --danger: #dc3545;
+    --pending: #ffc107;
+    --light: #f8f9fa;
+    --dark: #343a40;
+}
+
+/* Reset and base */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', sans-serif;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: url('lay.png') no-repeat center center fixed;
+    background-size: cover;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+h1 {
+    margin-bottom: 20px;
+    color: var(--dark);
+}
+
+/* Sidebar */
+.sidebar {
+    width: 200px;
+    background: #ffffff;
+    height: 100vh;
+    padding: 20px 0;
+    box-shadow: 3px 0 10px rgba(0, 0, 0, 0.1);
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1050;
+    transition: transform 0.3s ease;
+}
+
+.sidebar.hide {
+    transform: translateX(-100%);
+}
+
+.toggle-btn {
+    position: fixed;
+    top: 10px;
+    left: 220px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 10px 14px;
+    font-size: 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    z-index: 1200;
+    transition: left 0.3s ease;
+}
+
+.sidebar.hide ~ .toggle-btn {
+    left: 20px;
+}
+
+.sidebar .logo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 40px;
+    font-weight: 600;
+    color: #003366;
+    font-size: 16px;
+}
+
+.sidebar .logo img {
+    height: 65px;
+    margin-bottom: 5px;
+}
+
+.sidebar nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar nav ul li {
+    text-align: center;
+    padding: 14px 10px;
+    font-size: 15px;
+    cursor: pointer;
+    border-radius: 10px;
+    transition: background-color 0.3s ease;
+    margin: 3px;
+}
+
+.sidebar nav ul li a {
+    text-decoration: none;
+    color: #444;
+    display: block;
+    transition: color 0.3s;
+}
+
+.sidebar nav ul li:hover,
+.sidebar nav ul li.active {
+    background-color: var(--primary);
+}
+
+.sidebar nav ul li:hover a,
+.sidebar nav ul li.active a {
+    color: white;
+}
+
+/* Filters and Request Cards */
+.filters {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 30px;
+    margin-left: 220px;
+}
+
+.filters input,
+.filters select {
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    min-width: 180px;
+    background: white;
+}
+
+#requestsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    max-width: 800px;
+    margin-left: 220px;
+}
+
+.request-box {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.request-box:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+}
+
+.request-box p {
+    margin: 6px 0;
+    line-height: 1.5;
+}
+
+.request-box p strong {
+    color: var(--dark);
+}
+
+.status-badge,
+.status-Pending,
+.status-Approved,
+.status-Rejected {
+    display: inline-block;
+    padding: 4px 10px;
+    font-size: 13px;
+    border-radius: 20px;
+    font-weight: bold;
+    color: #212529;
+}
+
+.status-Pending {
+    background-color: var(--pending);
+}
+
+.status-Approved {
+    background-color: var(--success);
+    color: white;
+}
+
+.status-Rejected {
+    background-color: var(--danger);
+    color: white;
+}
+
+.highlight {
+    color: var(--primary);
+    font-weight: bold;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .filters {
+        flex-direction: column;
+        align-items: stretch;
+        margin-left: 0;
+    }
+
+    #requestsContainer {
+        margin-left: 0;
+        padding: 0 10px;
+    }
+
+    .toggle-btn {
+        left: 10px;
+    }
+
+    .sidebar {
+        width: 180px;
+    }
+
+    .sidebar.hide ~ .toggle-btn {
+        left: 10px;
+    }
+
+    .request-box {
+        padding: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .filters input,
+    .filters select {
+        font-size: 13px;
+        padding: 8px;
+    }
+
+    .request-box p {
+        font-size: 14px;
+    }
+
+    h1 {
+        font-size: 22px;
+        text-align: center;
+    }
+
+    .toggle-btn {
+        font-size: 16px;
+        padding: 8px 12px;
+    }
+}

@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard - Certificate of Grade</title>
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="COG_ADMIN.css">
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="logo">
+    <a href="Cog_And_Coe_AdminDashboard.html"><img src="Layout (7).png" alt="Logo" /></a>
+    <span>PENDING</span>
+
+  </div>
+  <nav>
+    <ul>
+      <li class="active"><span>📥<br>Pending</span></a></li>
+      <li><a href="cogapproved.html"><span>✅<br>Approved</span></a></li>
+      <li><a href="cogreject.html"><span>❌<br>Reject</span></a></li>
+      <li><a href="cogcompletetrans.html"><span>📦<br>Complete</span></a></li></a>
+    </ul>
+  </nav>
+</aside>
+
+<div class="header-container">
+  <h1>Admin - Certificate of Grade Requests</h1>
+  <input type="text" id="searchBar" placeholder="Search by Email..." autocomplete="off" />
+</div>
+
+<div class="table-container">
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Student #</th>
+        <th>Email</th>
+        <th>Purpose</th>
+        <th>School Year</th>
+        <th>Semester</th>
+        <th>Payment Method</th>
+        <th>Ref #</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="requestsTableBody">
+      <tr><td colspan="10" style="text-align:center;">Loading...</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div id="dateModal">
+  <div>
+    <h3>Set Pickup Date</h3>
+    <input type="date" id="pickupDateInput" />
+    <div>
+      <button id="confirmDateBtn" class="approve">Confirm</button>
+      <button id="cancelDateBtn" class="reject">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDe-KnRGbfrcKhsaKsijZjkbpwmAIiA5C8",
+  authDomain: "makmak-4ad38.firebaseapp.com",
+  projectId: "makmak-4ad38",
+  storageBucket: "makmak-4ad38.appspot.com",
+  messagingSenderId: "963282075408",
+  appId: "1:963282075408:web:0cd8e1b1a09ed03e18af95"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const requestsRef = ref(db, "requests");
+
+const tableBody = document.getElementById("requestsTableBody");
+const searchBar = document.getElementById("searchBar");
+
+emailjs.init("BhyQjC79iHhFVSFKY");
+
+const dateModal = document.getElementById("dateModal");
+const pickupDateInput = document.getElementById("pickupDateInput");
+const confirmDateBtn = document.getElementById("confirmDateBtn");
+const cancelDateBtn = document.getElementById("cancelDateBtn");
+
+let allRequests = [];
+
+let currentApproveKey = null;
+let currentApproveEmail = null;
+let currentApproveName = null;
+
+function renderTable(filter = "") {
+  tableBody.innerHTML = "";
+
+  const filtered = allRequests
+    .filter(({ data }) => data.status === "Pending")
+    .filter(({ data }) => data.email?.toLowerCase().includes(filter.toLowerCase()));
+
+  if (filtered.length === 0) {
+    tableBody.innerHTML = `<tr><td colspan="10" style="text-align:center;">No matching requests found.</td></tr>`;
+    return;
+  }
+
+  filtered.forEach(({ key, data }) => {
+    const row = document.createElement("tr");
+
+    row.innerHTML = `
+      <td>${data.name || ""}</td>
+      <td>${data.studentNumber || data.studentNum || ""}</td>
+      <td>${data.email || ""}</td>
+      <td>${data.purpose || data.reason || ""}</td>
+      <td>${data.schoolYear || ""}</td>
+      <td>${data.semester || ""}</td>
+      <td>${data.paymentMethod || "N/A"}</td>
+      <td>${data.proof || "N/A"}</td>
+      <td>${data.status}</td>
+    `;
+
+    const actionTd = document.createElement("td");
+
+    if (data.status === "Pending") {
+      const approveBtn = document.createElement("button");
+      approveBtn.className = "approve";
+      approveBtn.textContent = "Approve";
+      approveBtn.addEventListener("click", () => openDateModal(key, data.email, data.name));
+      actionTd.appendChild(approveBtn);
+
+      const rejectBtn = document.createElement("button");
+      rejectBtn.className = "reject";
+      rejectBtn.textContent = "Reject";
+      rejectBtn.addEventListener("click", () => updateStatus(key, data.email, data.name, "Rejected"));
+      actionTd.appendChild(rejectBtn);
+    } else {
+      actionTd.textContent = "-";
+    }
+
+    row.appendChild(actionTd);
+    tableBody.appendChild(row);
+  });
+}
+
+onValue(requestsRef, (snapshot) => {
+  allRequests = [];
+  if (!snapshot.exists()) {
+    tableBody.innerHTML = `<tr><td colspan="10" style="text-align:center;">No requests found.</td></tr>`;
+    return;
+  }
+
+  snapshot.forEach(childSnapshot => {
+    allRequests.push({ key: childSnapshot.key, data: childSnapshot.val() });
+  });
+
+  renderTable(searchBar.value.trim());
+});
+
+searchBar.addEventListener("input", () => {
+  renderTable(searchBar.value.trim());
+});
+
+function openDateModal(key, email, name) {
+  currentApproveKey = key;
+  currentApproveEmail = email;
+  currentApproveName = name;
+  pickupDateInput.value = "";
+  dateModal.style.display = "flex";
+}
+
+confirmDateBtn.addEventListener("click", async () => {
+  const pickupDate = pickupDateInput.value;
+  if (!pickupDate) return alert("Please select a pickup date.");
+
+  dateModal.style.display = "none";
+  const requestRef = ref(db, `requests/${currentApproveKey}`);
+
+  try {
+    await update(requestRef, { status: "Approved", pickupDate });
+    await emailjs.send("service_yhu82ho", "template_t4iap7g", {
+      to_email: currentApproveEmail,
+      student_name: currentApproveName,
+      request_status: "Approved",
+      pickup_date: pickupDate
+    });
+
+    alert(`Request approved. Email sent to ${currentApproveName}.`);
+  } catch (err) {
+    alert("Error: " + err.message);
+  }
+
+  currentApproveKey = currentApproveEmail = currentApproveName = null;
+});
+
+cancelDateBtn.addEventListener("click", () => {
+  dateModal.style.display = "none";
+  currentApproveKey = currentApproveEmail = currentApproveName = null;
+});
+
+async function updateStatus(key, email, name, newStatus) {
+  if (!confirm(`Are you sure you want to ${newStatus.toLowerCase()} this request?`)) return;
+
+  try {
+    const updates = newStatus === "Rejected" ? { status: newStatus, refundStatus: "Requested" } : { status: newStatus };
+
+    await update(ref(db, `requests/${key}`), updates);
+
+    await emailjs.send("service_yhu82ho", "template_cjzsdzn", {
+      to_email: email,
+      student_name: name,
+      request_status: newStatus,
+      pickup_date: "N/A"
+    });
+
+    alert(`Request ${newStatus.toLowerCase()} successfully. Email sent to ${name}.`);
+  } catch (err) {
+    alert("Error: " + err.message);
+  }
+}
+</script>
+
+</body>
+</html>

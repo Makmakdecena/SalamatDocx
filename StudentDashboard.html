@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DHVSU Document Request System</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="StudentDashboard.css">
+</head>
+<body>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="logo">
+      <img src="Layout (7).png" alt="Logo">
+      <span>DHVSU</span>
+    </div>
+    <nav>
+      <ul>
+        <li class="active"><a href="StudentDashboard.html">🏠<br>Dashboard</a></li>
+        <li><a href="cog.html">📄<br>COG</a></li>
+        <li><a href="coe.html">📝<br>COE</a></li>
+        <li><a href="studentpagestatus.html">📊<br>Status</a></li>
+        <li> <a href="login.html" class="logout">🚪<br>Logout</a></li>
+      </ul>
+    </nav>
+  </aside>
+
+  <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+
+  <h1>DHVSU Document Request System</h1>
+  <main>
+    <section class="cards-container">
+      <a href="cog.html" class="card-link" aria-label="Request a Certificate of Grades">
+        <div class="card">
+          <img src="https://img.icons8.com/ios-filled/50/document--v1.png" alt="Grades Icon" />
+          <p>Request a Certificate of Grades</p>
+        </div>
+      </a>
+      <a href="coe.html" class="card-link" aria-label="Request a Certificate of Enrollment">
+        <div class="card">
+          <img src="https://img.icons8.com/ios-filled/50/document--v1.png" alt="Enrollment Icon" />
+          <p>Request a Certificate of Enrollment</p>
+        </div>
+      </a>
+      <a href="studentpagestatus.html" class="card-link" aria-label="Student Request Status">
+        <div class="card">
+          <img src="https://img.icons8.com/ios-filled/50/document--v1.png" alt="Status Icon" />
+          <p>Student Status <br>COG / COE</p>
+        </div>
+      </a>
+    </section>
+  </main>
+
+ <script>
+    function toggleSidebar() {
+      const sidebar = document.getElementById("sidebar");
+      const toggleBtn = document.querySelector(".toggle-btn");
+
+      if (window.innerWidth <= 768) {
+        sidebar.classList.toggle("show");
+      } else {
+        sidebar.classList.toggle("hide");
+        if (sidebar.classList.contains("hide")) {
+          toggleBtn.style.left = "10px";
+          document.body.style.paddingLeft = "0";
+        } else {
+          toggleBtn.style.left = "210px";
+          document.body.style.paddingLeft = "200px";
+        }
+      }
+    }
+  </script>
+
+</body>
+</html>

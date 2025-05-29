@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DHVSU Document Request System</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" />
+  <style>
+    :root {
+      --primary-color: #a00;
+      --accent-yellow: #fcd34d;
+      --bg-gray: #f4f4f4;
+      --dark: #222;
+      --white: #fff;
+      --shadow: rgba(0, 0, 0, 0.1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      color: var(--dark);
+      line-height: 1.6;
+      background: url('lay.png') no-repeat center center fixed;
+      background-size: cover;
+    }
+
+    header {
+  background: url('lay.png') no-repeat center center fixed;
+  background-size: cover;
+  padding: 1.5rem 1rem;
+  box-shadow: 0 1px 5px var(--shadow);
+  text-align: center;
+}
+
+nav {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.logo {
+  font-size: 28px;
+  color: var(--accent-yellow); /* brighter and vivid */
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3); /* makes text pop */
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 1.5rem;
+  padding: 0;
+  margin-top: 0.5rem;
+}
+
+nav ul li a {
+  text-decoration: none;
+  color: var(--white);
+  font-weight: 600;
+  transition: color 0.3s;
+}
+
+nav ul li a:hover {
+  color: var(--accent-yellow);
+}
+
+
+    main {
+      padding: 4rem 2rem;
+      text-align: center;
+    }
+
+    main h1 {
+      font-size: 2.25rem;
+      color: var(--accent-yellow);
+      margin-bottom: 2.5rem;
+    }
+
+    .cards-container {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 2rem;
+    }
+
+    .card-link {
+      text-decoration: none;
+    }
+
+    .card {
+      background: var(--white);
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px var(--shadow);
+      width: 280px;
+      text-align: center;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 16px var(--shadow);
+    }
+
+    .card img {
+      width: 48px;
+      margin-bottom: 1rem;
+    }
+
+    .card p {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--dark);
+    }
+
+   footer {
+  background: url('lay.png') no-repeat center center fixed;
+  background-size: cover;
+  color: var(--white);
+  padding: 1.5rem 1rem;
+  margin-top: 3rem;
+  border-top: 3px solid rgba(177, 38, 38, 0.2); /* thin white line */
+}
+
+.footer-content {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.footer-logo {
+  width: 50px;
+  margin-bottom: 0.5rem;
+}
+
+footer a {
+  color: #ccc;
+  text-decoration: underline;
+  font-size: 13px;
+}
+
+footer p {
+  font-size: 13px;
+  line-height: 1.4;
+  margin: 0.25rem 0;
+}
+
+.copyright {
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 12px;
+  color: #888;
+}
+
+
+
+    @media (max-width: 600px) {
+      nav ul {
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .cards-container {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .footer-content {
+        flex-direction: column;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header role="banner">
+    <nav role="navigation" aria-label="Main Navigation">
+      <span class="logo">SALAMAT <strong>DOCX</strong></span>
+    </nav>
+  </header>
+
+  <main role="main">
+    <h1>DHVSU Document Request System</h1>
+    <section class="cards-container">
+      <a href="Cog_Admin.html" class="card-link" aria-label="Request a Certificate of Grades">
+        <div class="card">
+          <img src="https://img.icons8.com/ios-filled/50/document--v1.png" alt="Grades Document Icon" />
+          <p>Request a Certificate of Grades</p>
+        </div>
+      </a>
+
+      <a href="coeadmindashboar.html" class="card-link" aria-label="Request a Certificate of Enrollment">
+        <div class="card">
+          <img src="https://img.icons8.com/ios-filled/50/document--v1.png" alt="Enrollment Document Icon" />
+          <p>Request a Certificate of Enrollment</p>
+        </div>
+      </a>
+    </section>
+  </main>
+
+  <footer role="contentinfo">
+    <div class="footer-content">
+      <div>
+        <img src="Layout (7).png" alt="DHVSU Logo" class="footer-logo" />
+        <p><strong>Registrar - Don Honorio Ventura State University</strong><br />
+        Ground Floor, Administration Building, DHVSU, Cabambangan, Bacolor, Pampanga 2001</p>
+      </div>
+      <div>
+        <p><strong>Inquiries?</strong><br />
+        Email - <a href="mailto:registrar@dhvsu.edu.ph">registrar@dhvsu.edu.ph</a><br />
+        Contact - (045) 649 - 8050 local 147</p>
+      </div>
+    </div>
+    <p class="copyright">© SALAMAT, DOCX - DHVSU Registrar</p>
+  </footer>
+</body>
+</html>

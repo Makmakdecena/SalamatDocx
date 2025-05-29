@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>My COE & COG Requests || STATUS</title>
+  <link rel="stylesheet" href="studentpagestatus.css">
+</head>
+<body>
+  <aside class="sidebar" id="sidebar">
+    <div class="logo">
+      <a href="Cog_And_Coe_AdminDashboard.html"><img src="Layout (7).png" alt="Logo" /></a>
+      <span>Status</span>
+    </div>
+      <nav>
+    <ul>
+      <li><a href="StudentDashboard.html">🏠<br>Dashboard</a></li>
+        <li><a href="cog.html">📄<br>COG</a></li>
+        <li><a href="coe.html">📝<br>COE</a></li>
+        <li class="active"><a href="studentpagestatus.html"><span>📦<br>Status</span></a></li>
+    </ul>
+  </nav>
+  </aside>
+  <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+  <h1>My COE & COG Requests</h1>
+
+  <div class="filters">
+    <input type="text" id="searchInput" placeholder="Search by purpose..." />
+    <select id="statusFilter">
+      <option value="all">All Statuses</option>
+      <option value="Pending">Pending</option>
+      <option value="Approved">Approved</option>
+      <option value="Rejected">Rejected</option>
+    </select>
+    <select id="typeFilter">
+      <option value="all">All Types</option>
+      <option value="COE">Certificate of Enrollment (COE)</option>
+      <option value="COG">Certificate of Grades (COG)</option>
+    </select>
+  </div>
+
+  <div id="requestsContainer">
+    <p>Loading your requests...</p>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDe-KnRGbfrcKhsaKsijZjkbpwmAIiA5C8",
+      authDomain: "makmak-4ad38.firebaseapp.com",
+      projectId: "makmak-4ad38",
+      storageBucket: "makmak-4ad38.appspot.com",
+      messagingSenderId: "963282075408",
+      appId: "1:963282075408:web:0cd8e1b1a09ed03e18af95"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const auth = getAuth();
+
+    const requestsContainer = document.getElementById("requestsContainer");
+    const searchInput = document.getElementById("searchInput");
+    const statusFilter = document.getElementById("statusFilter");
+    const typeFilter = document.getElementById("typeFilter");
+
+    let allRequests = [];
+
+    function renderRequests() {
+      const searchValue = searchInput.value.toLowerCase();
+      const statusValue = statusFilter.value;
+      const typeValue = typeFilter.value;
+
+      const filteredRequests = allRequests.filter(req => {
+        const matchesStatus = statusValue === "all" || req.status === statusValue;
+        const matchesSearch = req.reason.toLowerCase().includes(searchValue);
+        const matchesType = typeValue === "all" || req.type === typeValue;
+        return matchesStatus && matchesSearch && matchesType;
+      });
+
+      // Sort descending by dateSubmitted
+      filteredRequests.sort((a, b) => new Date(b.dateSubmitted) - new Date(a.dateSubmitted));
+
+      if (!filteredRequests.length) {
+        requestsContainer.innerHTML = "<p>No matching requests found.</p>";
+        return;
+      }
+
+      requestsContainer.innerHTML = "";
+
+      filteredRequests.forEach(request => {
+        const requestHTML = `
+          <div class="request-box">
+            <p><strong>Type:</strong> ${request.type}</p>
+            <p><strong>Name:</strong> ${request.name}</p>
+            <p><strong>Student Number:</strong> ${request.studentNumber}</p>
+            <p><strong>Purpose:</strong> ${request.reason}</p>
+            <p><strong>School Year:</strong> ${request.schoolYear}</p>
+            <p><strong>Semester:</strong> ${request.semester}</p>
+            <p><strong>Status:</strong> <span class="status-badge status-${request.status}">${request.status}</span></p>
+            ${request.pickupDate ? `<p><strong>Pickup Date:</strong> ${request.pickupDate}</p>` : ""}
+            ${request.refundStatus ? `<p><strong>Refund Status:</strong> <span class="highlight">${request.refundStatus}</span></p>` : ""}
+            ${request.dateSubmitted ? `<p><strong>Date Submitted:</strong> ${request.dateSubmitted}</p>` : ""}
+          </div>
+        `;
+        requestsContainer.innerHTML += requestHTML;
+      });
+    }
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        requestsContainer.innerHTML = "<p>You must be logged in to view your request status.</p>";
+        return;
+      }
+
+      const userEmail = user.email;
+      const coeRef = ref(db, "coeRequests");
+      const cogRef = ref(db, "requests");
+
+      allRequests = [];
+
+      onValue(coeRef, (coeSnap) => {
+        allRequests = [];
+        coeSnap.forEach(childSnap => {
+          const request = childSnap.val();
+          if (request.email === userEmail) {
+            request.type = "COE";
+            allRequests.push(request);
+          }
+        });
+
+        onValue(cogRef, (cogSnap) => {
+          cogSnap.forEach(childSnap => {
+            const request = childSnap.val();
+            if (request.email === userEmail) {
+              request.type = "COG";
+              allRequests.push(request);
+            }
+          });
+
+          renderRequests();
+        });
+      });
+    });
+
+    searchInput.addEventListener("input", renderRequests);
+    statusFilter.addEventListener("change", renderRequests);
+    typeFilter.addEventListener("change", renderRequests);
+  </script>
+    <script>
+    function toggleSidebar() {
+      const sidebar = document.querySelector(".sidebar");
+      const toggleBtn = document.querySelector(".toggle-btn");
+      sidebar.classList.toggle("hide");
+
+      // adjust ko nalang pag sinipag
+      if (sidebar.classList.contains("hide")) {
+        toggleBtn.style.left = "10px";
+      } else {
+        toggleBtn.style.left = "210px";
+      }
+    }
+  </script>
+</body>
+</html>

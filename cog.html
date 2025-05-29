@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Request COG</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="cog.css">
+</head>
+<body>
+
+<a href="StudentDashboard.html">
+  <aside class="sidebar" id="sidebar">
+    <div class="logo">
+      <img src="Layout (7).png" alt="Logo">
+      <span>COG</span>
+    </div>
+</a>
+<nav>
+  <ul>
+    <li><a href="StudentDashboard.html">🏠<br>Dashboard</a></li>
+    <li class="active"><a href="cog.html">📄<br>COG</a></li>
+    <li><a href="coe.html">📝<br>COE</a></li>
+    <li><a href="studentpagestatus.html">📊<br>Status</a></li>
+  </ul>
+</nav>
+</aside>
+
+<button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+
+<div class="container">
+  <h1>Request Certificate of Grades</h1>
+  <form id="requestForm">
+    <input type="text" id="name" placeholder="Name" required />
+    <input type="text" id="studentNumber" placeholder="Student Number" required />
+    <input type="email" id="email" placeholder="Email Address" required readonly />
+    <input type="text" id="reason" placeholder="Reason for Request" required />
+    <input type="text" id="schoolYear" placeholder="School Year (e.g., 2023-2024)" required />
+    <input type="text" id="semester" placeholder="Semester (e.g., 1st)" required />
+    <button type="submit">Continue to Payment</button>
+  </form>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+  import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDe-KnRGbfrcKhsaKsijZjkbpwmAIiA5C8",
+    authDomain: "makmak-4ad38.firebaseapp.com",
+    projectId: "makmak-4ad38",
+    storageBucket: "makmak-4ad38.appspot.com",
+    messagingSenderId: "963282075408",
+    appId: "1:963282075408:web:0cd8e1b1a09ed03e18af95"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  const auth = getAuth();
+
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      document.getElementById("email").value = user.email;
+
+      document.getElementById("requestForm").addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const requestRef = ref(db, "requests");
+        const newRequestRef = push(requestRef);
+        const requestId = newRequestRef.key;
+
+        set(newRequestRef, {
+          name: document.getElementById("name").value.trim(),
+          studentNumber: document.getElementById("studentNumber").value.trim(),
+          email: user.email,
+          reason: document.getElementById("reason").value.trim(),
+          schoolYear: document.getElementById("schoolYear").value.trim(),
+          semester: document.getElementById("semester").value.trim(),
+          paymentMethod: "",
+          proof: "",
+          status: "Awaiting Payment",
+          refundStatus: ""
+        }).then(() => {
+          window.location.href = `cogpayment.html?id=${requestId}`;
+        });
+      });
+    } else {
+      alert("You must be logged in to submit a request.");
+    }
+  });
+
+  window.logout = function () {
+    signOut(auth).then(() => {
+      alert("Logged out successfully.");
+      window.location.href = "login.html";
+    }).catch((error) => {
+      console.error("Logout error:", error);
+    });
+  };
+</script>
+
+<script>
+    function toggleSidebar() {
+      const sidebar = document.getElementById("sidebar");
+      const toggleBtn = document.querySelector(".toggle-btn");
+
+      if (window.innerWidth <= 768) {
+        sidebar.classList.toggle("show");
+      } else {
+        sidebar.classList.toggle("hide");
+        if (sidebar.classList.contains("hide")) {
+          toggleBtn.style.left = "10px";
+          document.body.style.paddingLeft = "0";
+        } else {
+          toggleBtn.style.left = "210px";
+          document.body.style.paddingLeft = "200px";
+        }
+      }
+    }
+  </script>
+
+</body>
+</html>

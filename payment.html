@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Complete Payment</title>
+  <link rel="stylesheet" href="payment.css">
+</head>
+<body>
+  <div class="container">
+    <h2>Complete Your Payment</h2>
+    <form id="paymentForm">
+      <input type="text" id="fullName" placeholder="Bank Acc Name" required />
+
+      <select id="paymentMethod" required>
+        <option value="" disabled selected>Select Payment Method</option>
+        <option value="GCash">GCash</option>
+        <option value="PayMaya">PayMaya</option>
+        <option value="Bank Transfer">Bank Transfer</option>
+      </select>
+
+      <input type="text" id="referenceNumber" placeholder="Reference Number (13 digits)" required maxlength="13" />
+
+      <div class="qr-container" id="qrContainer">
+        <p>Scan the QR Code to Pay</p>
+        <img id="qrImage" src="" alt="QR Code" />
+        <small>Enter the reference number after payment</small>
+      </div>
+
+      <button type="submit">Submit Payment</button>
+    </form>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+    import { getDatabase, ref, update } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDe-KnRGbfrcKhsaKsijZjkbpwmAIiA5C8",
+      authDomain: "makmak-4ad38.firebaseapp.com",
+      projectId: "makmak-4ad38",
+      storageBucket: "makmak-4ad38.appspot.com",
+      messagingSenderId: "963282075408",
+      appId: "1:963282075408:web:0cd8e1b1a09ed03e18af95"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    function getRequestIdFromURL() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get("id");
+    }
+
+    const requestId = getRequestIdFromURL();
+
+    if (!requestId) {
+      alert("Missing request ID.");
+    }
+
+    document.getElementById("paymentMethod").addEventListener("change", function () {
+      const selectedMethod = this.value;
+      const qrContainer = document.getElementById("qrContainer");
+      const qrImage = document.getElementById("qrImage");
+
+      if (selectedMethod === "GCash") {
+        qrContainer.style.display = "block";
+        qrImage.src = "g.png";
+      } else if (selectedMethod === "PayMaya") {
+        qrContainer.style.display = "block";
+        qrImage.src = "maya.png";
+      } else if (selectedMethod === "Bank Transfer") {
+        qrContainer.style.display = "block";
+        qrImage.src = "go.png";
+      } else {
+        qrContainer.style.display = "none";
+      }
+    });
+
+    document.getElementById("paymentForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const fullName = document.getElementById("fullName").value.trim();
+      const paymentMethod = document.getElementById("paymentMethod").value;
+      const referenceNumber = document.getElementById("referenceNumber").value.trim();
+
+      if (fullName.length === 0) {
+        alert("Please enter your full name.");
+        return;
+      }
+
+      const refNumberPattern = /^\d{13}$/;
+      if (!refNumberPattern.test(referenceNumber)) {
+        alert("Reference Number must be exactly 13 digits.");
+        return;
+      }
+
+      const updates = {
+        fullName: fullName,
+        paymentMethod: paymentMethod,
+        proof: referenceNumber,
+        status: "Pending"
+      };
+
+      update(ref(db, `coeRequests/${requestId}`), updates)
+        .then(() => {
+          alert("Payment submitted successfully!");
+          window.location.href = "coe.html";
+        })
+        .catch((error) => {
+          alert("Failed to update payment: " + error.message);
+        });
+    });
+  </script>
+</body>
+</html>
